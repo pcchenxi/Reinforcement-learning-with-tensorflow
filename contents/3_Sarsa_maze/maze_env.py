@@ -15,7 +15,7 @@ View more on my tutorial page: https://morvanzhou.github.io/tutorials/
 
 import numpy as np
 np.random.seed(1)
-import tkinter as tk
+import Tkinter as tk
 import time
 
 

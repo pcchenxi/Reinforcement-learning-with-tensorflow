@@ -29,9 +29,9 @@ class DeepQNetwork:
             e_greedy=0.9,
             replace_target_iter=300,
             memory_size=500,
-            batch_size=32,
-            e_greedy_increment=None,
-            output_graph=False,
+            batch_size=100,
+            e_greedy_increment= 0.0001, 
+            output_graph=True,
     ):
         self.n_actions = n_actions
         self.n_features = n_features
@@ -42,7 +42,9 @@ class DeepQNetwork:
         self.memory_size = memory_size
         self.batch_size = batch_size
         self.epsilon_increment = e_greedy_increment
-        self.epsilon = 0 if e_greedy_increment is not None else self.epsilon_max
+        self.epsilon = 0.8 if e_greedy_increment is not None else self.epsilon_max
+
+        print self.epsilon, self.epsilon_max
 
         # total learning step
         self.learn_step_counter = 0
@@ -109,6 +111,7 @@ class DeepQNetwork:
                 self.q_next = tf.matmul(l1, w2) + b2
 
     def store_transition(self, s, a, r, s_):
+        # ------------------ store_transition ------------------
         if not hasattr(self, 'memory_counter'):
             self.memory_counter = 0
 
@@ -123,7 +126,7 @@ class DeepQNetwork:
     def choose_action(self, observation):
         # to have batch dimension when feed into tf placeholder
         observation = observation[np.newaxis, :]
-
+        
         if np.random.uniform() < self.epsilon:
             # forward feed the observation and get q value for every actions
             actions_value = self.sess.run(self.q_eval, feed_dict={self.s: observation})
@@ -201,6 +204,8 @@ class DeepQNetwork:
         # increasing epsilon
         self.epsilon = self.epsilon + self.epsilon_increment if self.epsilon < self.epsilon_max else self.epsilon_max
         self.learn_step_counter += 1
+
+        print self.epsilon, self.epsilon_max
 
     def plot_cost(self):
         import matplotlib.pyplot as plt
